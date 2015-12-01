@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+
+<struts>
+	<!--设置常量  -->
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<constant name="struts.devMode" value="true" />
+	<constant name="struts.multipart.maxSize" value="1000000"/>
+	
+	
+	<package name="system"  namespace="/system" extends="json-default">
+		<!--配置包级别的拦截器  -->
+		<interceptors>
+			<interceptor name="MyInterceptor" class="hxk.interceptor.MyInterceptor"></interceptor>
+			<interceptor-stack name="mystack">
+				<interceptor-ref name="defaultStack"></interceptor-ref>
+				<interceptor-ref name="MyInterceptor"></interceptor-ref>
+			</interceptor-stack>
+		</interceptors>
+		<!--  设置包级别默认的拦截器-->
+		<default-interceptor-ref name="mystack"></default-interceptor-ref>
+		
+		
+		<action name="user" class="userAction">
+			<!-- 普通的视图 -->
+			<result name="index">/jsp/user/index.jsp</result>
+			
+			<!--  ajax视图-->
+			<result name="ajax" type="json">
+				<param name="root">pwd</param>
+			</result>
+			
+			<!-- 下载的视图 -->
+			<result name="download" type="stream">
+			    <!-- 指定下载文件的文件类型 -->
+			    <param name="allowedExtensions">xlsx</param>
+			    <!-- 指定由getTargetFile()方法返回被下载文件的InputStream -->
+			    <param name="inputName">targetFile</param>
+			    <!--指定下载后别人保存时的文件名  -->
+			    <param name="contentDisposition">filename="test01.xlsx"</param>
+			    <!-- 指定下载文件的缓冲大小 -->
+			    <param name="bufferSize">4096</param>
+  			</result>		
+  				
+		</action>
+		
+		
+		<!--  配置一个上传文件的action的Demo-->
+		<action name="upload" class="uploadAction">
+  			<!-- 配置fileUpload的拦截器 -->
+			<interceptor-ref name="fileUpload">
+			<!-- 配置允许上传的文件类型 -->
+			<param name="allowedExtensions">xlsx</param>
+			<!-- 配置允许上传的文件大小 -->
+			<param name="maximumSize">1000000</param>
+			</interceptor-ref>
+			<!-- 配置系统默认的拦截器 -->
+			<interceptor-ref name="defaultStack"/>
+			<result name="upload">/jsp/upload/uploadResult.jsp</result>
+			<result name="input">/jsp/upload/uploadFail.jsp</result>
+		</action>
+	</package>
+	
+
+</struts>
